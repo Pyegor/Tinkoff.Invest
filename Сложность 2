@@ -1,0 +1,75 @@
+import pandas as pd
+
+maintable = pd.read_csv("new.csv", header=0, names=['index', 'date', 'time', 'price'])
+
+maintable.info
+
+price = maintable.price
+date = maintable.date
+time = maintable.time
+index = maintable.index
+range_index = len(maintable)
+
+def search_min(start_index):
+    datemin = 0
+    timemin = 0
+    indexmin = 0
+    amin = price[(start_index + range_index) // 2]
+    for i in range (start_index + 1 , range_index - 1):
+            if price[i] <= price[i+1] and price[i] <= price[i-1] and price[i] < amin:
+                amin = price[i]
+                timemin = time[i]
+                datemin = date[i]
+                indexmin = i
+    if amin == price[(start_index + range_index) // 2]:
+                amin = price[start_index]
+                timemin = time[start_index]
+                datemin = date[start_index]
+                indexmin = start_index
+                return indexmin, datemin, timemin, amin
+    return indexmin, datemin, timemin, amin
+
+def search_max(start_index):
+    amax = price[start_index]
+    datemax = 0
+    timemax = 0
+    indexmax = 0
+    for i in range (start_index + 1, range_index - 1):
+            if price[i] >= price[i+1] and price[i] >= price[i-1] and price[i] > amax:
+                    amax = price[i]
+                    timemax = time[i]
+                    datemax = date[i]
+                    indexmax = i  
+    if amax == price[start_index]:
+        amax = price[start_index]
+        datemax = time[start_index]
+        timemax = date[start_index]
+        indexmax = start_index
+        return indexmax, datemax, timemax, amax
+    return indexmax, datemax, timemax, amax
+
+capital = 0
+steps = 0
+def search_for_investment(number, capital, steps):
+    steps += 1
+    if steps <= 2:
+        inf_about_min = search_min(number)
+        inf_about_max = search_max(inf_about_min[0])
+        if inf_about_max[1] - inf_about_min[1] > 0:
+            print('Информация о покупке(дата, время, цена): ', inf_about_min[1:])
+            print('Информация о продаже(дата, время, цена): ', inf_about_max[1:])
+            capital += inf_about_max[-1] - inf_about_min[-1]
+            print('Разница между продажей и покупкой: ', capital)
+            print('Сведения между покупкой и продажей:\n ', maintable[inf_about_min[0]:inf_about_max[0]])
+            search_for_investment(inf_about_max[0], capital, steps)
+        elif inf_about_max[1] - inf_about_min[1] == 0:
+            if inf_about_max[2] - inf_about_min[2] > 0:
+                print('Информация о покупке(дата, время, цена): ', inf_about_min[1:])
+                print('Информация о продаже(дата, время, цена): ', inf_about_max[1:])
+                capital += inf_about_max[-1] - inf_about_min[-1]
+                print('Разница между продажей и покупкой: ', capital)
+                print('Сведения между покупкой и продажей: ', maintable[inf_about_min[0]:inf_about_max[0]])
+                search_for_investment(inf_about_max[0], capital)
+    else:
+        print('Финальная выгода: ', capital)
+search_for_investment(0, capital, steps)
