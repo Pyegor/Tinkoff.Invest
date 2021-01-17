@@ -71,12 +71,12 @@ def search_for_investment(number, capital):
         inf_about_min = search_min(number, capital) #Передаем позицию и деньги для нахождения ближайшего локального минимума. Получаем всю информацию - индекс, дату, время, стоимость, капитал
         if inf_about_min: #Если мы купили хотя бы одну акцию, то передаем на продажу
             inf_about_max = search_max(inf_about_min[0], inf_about_min[-2], inf_about_min[-1]) #Передаем индекс локального минимума, количество акций и капитал. Получаем всё тоже, что и у inf_about_min
-             # Так как покупок и продаж будет очень много то, я решил ограничиться выводом финального результата, но убрав все комментарии снизу будут представлены все промежуточные вычисления
-#             print(inf_about_min)
-#             print(inf_about_max)
-#             print(maintable[inf_about_min[0]:inf_about_max[0]])
+             # Так как покупок и продаж будет очень много то, я решил ограничиться выводом финального результата, но убрав все комментарии снизу будут представлены все промежуточные вычисления.
+#            print('Информация о покупке(дата, время, цена): ', inf_about_min[1:])
+#            print('Информация о продаже(дата, время, цена): ', inf_about_max[1:])
+#            print('Сведения между покупкой и продажей:\n ', maintable[inf_about_min[0]:inf_about_max[0]])
             capital = inf_about_max[-1] #Передаем capital значение полученное capital после inf_about_max
-#             print('Выгода: ' + str(capital))
+#            print('Выгода: ', str(capital))
             if inf_about_min[0] == inf_about_max[0]:
                 return print("Больше нет предложений!", capital)
             search_for_investment(inf_about_max[0], capital)
