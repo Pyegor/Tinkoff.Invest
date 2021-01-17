@@ -1,0 +1,86 @@
+import pandas as pd
+
+maintable = pd.read_csv("new.csv", header=0, names=['index', 'date', 'time', 'price']) #открыл документ и переименовал один из столбоцов
+
+#создал для каждого столбца переменную
+
+price = maintable.price 
+date = maintable.date
+time = maintable.time
+index = maintable.index
+range_index = len(maintable)
+
+
+maintable['date'] = pd.to_datetime(date, format='%Y%m%d', errors='raise') #перевёл даты в datetime формат, думал с помощью matplotlib построить графики, но не разобрался как соединить столбец time с date
+
+#функция ищущая минимальное число начиная с start_index и покупающая акции(то есть отнимающая от capital)
+def search_min(start_index, capital):
+    datemin = 0
+    timemin = 0
+    indexmin = 0
+    amin = price[start_index]
+    for i in range (start_index + 1 , range_index - 1):
+            if price[i] <= price[i+1] and price[i] <= price[i-1] and price[i] < amin: #Проверяем, чтобы значение было локальным минимумом, то есть меньше своих соседей
+                amin = price[i]
+                timemin = time[i]
+                datemin = date[i]
+                indexmin = i
+                if capital > amin:  #Проверяем можем ли мы купить хотя бы одну акцию с данными денежными средствами
+                    coef = capital // amin
+                    capital = capital % amin
+                    return indexmin, datemin, timemin, amin, coef, capital
+                else:
+                    continue
+    else:
+        return False
+    if amin == price[start_index]:  #Такая ситуация может лишь быть, когда больше нету новых цен
+                amin = price[start_index]
+                timemin = time[start_index]
+                datemin = date[start_index]
+                indexmin = start_index
+                coef = 0
+                return indexmin, datemin, timemin, amin, coef, capital
+
+#Функция для поиска локального максимума
+def search_max(start_index, coef, capital):
+    amax = price[start_index] #Так как start_index это локальный минимум, а индексы идут в порядке возрастания, то дата и время максимума точно будут после даты и времени минимума
+    datemax = 0
+    timemax = 0
+    indexmax = 0
+    for i in range (start_index + 1, range_index - 1):
+            if price[i] >= price[i+1] and price[i] >= price[i-1] and price[i] > amax:
+                    amax = price[i]
+                    timemax = time[i]
+                    datemax = date[i]
+                    indexmax = i 
+                    capital = capital + (coef * amax) #coef – это сколько акций мы купили до этого
+                    return indexmax, datemax, timemax, amax, capital                 
+    if amax == price[start_index]: #Та же ситуация, что и в функции минимума
+        amax = price[start_index]
+        datemax = date[start_index]
+        timemax = time[start_index]
+        indexmax = start_index
+        capital = capital + (coef * amax)
+        return indexmax, datemax, timemax, amax, capital
+
+given_capital = int(input())
+
+#Функция, отвечающая за продажу и покупку
+#Функции по поиску минимума и максимума возвращают type tuple и сейчас довольно трудно следить за логикой передачи информации! Поэтому везде добавлены, поясняющие комментарии
+def search_for_investment(number, capital):
+        inf_about_min = search_min(number, capital) #Передаем позицию и деньги для нахождения ближайшего локального минимума. Получаем всю информацию - индекс, дату, время, стоимость, капитал
+        if inf_about_min: #Если мы купили хотя бы одну акцию, то передаем на продажу
+            inf_about_max = search_max(inf_about_min[0], inf_about_min[-2], inf_about_min[-1]) #Передаем индекс локального минимума, количество акций и капитал. Получаем всё тоже, что и у inf_about_min
+             # Так как покупок и продаж будет очень много то, я решил ограничиться выводом финального результата, но убрав все комментарии снизу будут представлены все промежуточные вычисления
+#             print(inf_about_min)
+#             print(inf_about_max)
+#             print(maintable[inf_about_min[0]:inf_about_max[0]])
+            capital = inf_about_max[-1] #Передаем capital значение полученное capital после inf_about_max
+#             print('Выгода: ' + str(capital))
+            if inf_about_min[0] == inf_about_max[0]:
+                return print("Больше нет предложений!", capital)
+            search_for_investment(inf_about_max[0], capital)
+        else:
+            return print('Нельзя купить ни одной акции!')
+
+search_for_investment(0, given_capital)
