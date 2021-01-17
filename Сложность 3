@@ -13,7 +13,7 @@ range_index = len(maintable)
 
 maintable['date'] = pd.to_datetime(date, format='%Y%m%d', errors='raise') #перевёл даты в datetime формат, думал с помощью matplotlib построить графики, но не разобрался как соединить столбец time с date
 
-#функция ищущая минимальное число начиная с start_index и покупающая акции(то есть отнимающая от capital)
+#Функция, ищущая минимальное число начиная с start_index и покупающая акции(то есть отнимающая от capital)
 def search_min(start_index, capital):
     datemin = 0
     timemin = 0
@@ -25,7 +25,7 @@ def search_min(start_index, capital):
                 timemin = time[i]
                 datemin = date[i]
                 indexmin = i
-                if capital > amin:  #Проверяем можем ли мы купить хотя бы одну акцию с данными денежными средствами
+                if capital > amin:  #Проверяем можем ли мы купить хотя бы одну акцию с данным капиталом
                     coef = capital // amin
                     capital = capital % amin
                     return indexmin, datemin, timemin, amin, coef, capital
@@ -33,7 +33,7 @@ def search_min(start_index, capital):
                     continue
     else:
         return False
-    if amin == price[start_index]:  #Такая ситуация может лишь быть, когда больше нету новых цен
+    if amin == price[start_index]:  #Такая ситуация может лишь быть тогда, когда больше нету новых цен
                 amin = price[start_index]
                 timemin = time[start_index]
                 datemin = date[start_index]
