@@ -1,0 +1,40 @@
+import pandas as pd
+
+maintable = pd.read_csv("new.csv", header=0, names=['index', 'date', 'time', 'price'])
+
+price = maintable.price
+date = maintable.date
+time = maintable.time
+index = maintable.index
+
+start_index = 
+amin = price[262108 / 2]
+datemin = 0
+timemin = 0
+indexmin = 0
+for i in range (1, 262108 - 1 ):
+        if price[i] < price[i+1] and price[i] < price[i-1] and price[i] < amin:
+            amin = price[i]
+            timemin = time[i]
+            datemin = date[i]
+            indexmin = i
+print(indexmin, datemin, timemin, amin)
+
+amax = price[262108 / 2]
+datemax = 0
+timemax = 0
+indexmax = 0
+for i in range (1, 262108 - 1 ):
+        if price[i] > price[i+1] and price[i] > price[i-1]:
+            if price[i] > amax:
+                amax = price[i]
+                timemax = time[i]
+                datemax = date[i]
+                indexmax = i
+print(indexmax, datemax, timemax, amax)
+
+if datemax - datemin >= 0 and timemax - timemin > 0:
+    print(datemin, timemin, amin)
+    print(datemax, timemax, amax)
+    print(amax - amin)
+    print(maintable[indexmin:indexmax])
